@@ -1,5 +1,7 @@
 package com.crud.code.hospital.service;
 
+import com.crud.code.hospital.config.SqlQueryLoader;
+import com.crud.code.hospital.dto.ApiResponseUpdate;
 import com.crud.code.hospital.dto.PatientDTO;
 import com.crud.code.hospital.dto.UpdatePatientDto;
 import com.crud.code.hospital.exceptionHandler.PatientException;
@@ -7,8 +9,9 @@ import com.crud.code.hospital.model.PatientEntity;
 
 import com.crud.code.hospital.repository.PatientRepo;
 import com.crud.code.hospital.utility.ApiLogUtil;
-import com.crud.code.hospital.dto.ApiResponseLogDto;
+import com.crud.code.hospital.dto.ApiResponseCreate;
 import com.crud.code.hospital.utility.MessageResult;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,8 @@ public class PatientServ {
     PatientRepo patientRepo;
     @Autowired
     HttpServletRequest request;
+    @Autowired
+    private EntityManager entityManager;
 
     public MessageResult addPatientDetails(PatientDTO dto)
     {
@@ -35,21 +40,47 @@ public class PatientServ {
         patientEntity.setEmail(dto.getEmail());
         patientEntity.setDate(LocalDate.now());
         patientRepo.save(patientEntity);
-        ApiResponseLogDto logData = ApiLogUtil.buildLog("Add Patient Details", "/patient/create", "POST", dto, patientEntity, startTime, 200);
+        ApiResponseCreate logData = ApiLogUtil.buildLog("Add Patient Details", "/patient/create", "POST", dto, patientEntity, startTime, 200);
         return MessageResult.apiLogSuccess(logData);
-
-
     }
 
-    public PatientEntity updatePatientDetails(Integer id, String name, UpdatePatientDto dto) throws PatientException {
-        Optional<PatientEntity> existingPatient = patientRepo.findByIdAndName(id, name);
+    public Optional<PatientEntity> findByIdAndNameDynamic(Integer id ,String name){
+        String sql = SqlQueryLoader.get("patient.findByIdAndName");
+        return entityManager.createQuery(sql , PatientEntity.class)
+                .setParameter("id" , id)
+                .setParameter("name" , name)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
+    public List<PatientEntity> searchByDateRangeDynamic(LocalDate fromDate,
+                                         LocalDate toDate){
+        String sql = SqlQueryLoader.get("patient.searchByDateRange");
+        return entityManager.createQuery(sql , PatientEntity.class)
+                .setParameter("fromDate" , fromDate)
+                .setParameter("toDate" , toDate)
+                .getResultList();
+    }
+
+    public Optional<PatientEntity> findByEmailDynamic(String email){
+        String sql = SqlQueryLoader.get("patient.findByEmail");
+        return entityManager.createQuery(sql , PatientEntity.class)
+                .setParameter("email" , email)
+                .getResultList()
+                .stream().findFirst();
+    }
+
+    public MessageResult updatePatientDetails(Integer id, String name, UpdatePatientDto dto) throws PatientException {
+        long startTime = System.currentTimeMillis();
+        Optional<PatientEntity> existingPatient = findByIdAndNameDynamic(id, name);
         if (existingPatient.isPresent()) {
             PatientEntity entity = existingPatient.get();
             entity.setAge(dto.getAge());
             entity.setIllness(dto.getIllness());
             entity.setDate(LocalDate.now());
             patientRepo.save(entity);
-            return entity;
+            ApiResponseUpdate update = ApiLogUtil.buildLogForUpdate("Update Patient Details" , "/patient/update" , "POST" ,dto , entity ,startTime,201);
+            return MessageResult.apiLogSuccess(update);
         }
         throw new PatientException("Patient not exist, you need to add");
     }
@@ -78,7 +109,7 @@ public class PatientServ {
         return "patient with id "+ id +" was deleted successfully";
     }
     public Optional<PatientEntity> findByEmail(String email) throws PatientException{
-        Optional<PatientEntity> patient = patientRepo.findByEmail(email);
+        Optional<PatientEntity> patient = findByEmailDynamic(email);
         if(patient.isEmpty()){
             throw new PatientException("Patient not found with this email");
         }

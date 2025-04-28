@@ -29,7 +29,7 @@ public class PatientController {
     }
 
     @PutMapping("/update")
-    public PatientEntity updateDetails(@RequestParam Integer id ,String name , @RequestBody UpdatePatientDto dto) throws PatientException {
+    public MessageResult updateDetails(@RequestParam Integer id ,String name , @RequestBody UpdatePatientDto dto) throws PatientException {
 
         return patientServ.updatePatientDetails(id , name , dto);
     }
@@ -70,10 +70,10 @@ public class PatientController {
     @GetMapping("/searchByDateRange")
     public List<PatientEntity> searchByDateRange(@RequestParam LocalDate fromDate , @RequestParam LocalDate toDate)
     {
-      return  patientRepo.searchByDateRange(fromDate , toDate);
+      return  patientServ.searchByDateRangeDynamic(fromDate , toDate);
     }
     @GetMapping("/findByEmail")
     public Optional<PatientEntity> findByEmail(@RequestParam String email)throws PatientException{
-        return patientServ.findByEmail(email);
+        return patientServ.findByEmailDynamic(email);
     }
 }

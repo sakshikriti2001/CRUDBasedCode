@@ -4,7 +4,7 @@ public class UpdatePatientDto {
 
     private Integer age;
     private String illness;
-    private String modifiedBy;
+
 
     public Integer getAge() {
         return age;

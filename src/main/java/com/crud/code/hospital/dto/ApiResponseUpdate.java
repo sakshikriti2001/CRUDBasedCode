@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ApiResponseLogDto {
+public class ApiResponseUpdate {
     private String apiName;
     private String endpointURL;
     private Object requestBody;
@@ -19,7 +19,6 @@ public class ApiResponseLogDto {
     private long totalDuration; // in milliseconds
     private int httpStatusCode;
     private Object responseBody;
-    private LocalDateTime createdDate;
     private String modifiedBy;
-//    private LocalDateTime modifiedDate;
+    private LocalDateTime modifiedDate;
 }

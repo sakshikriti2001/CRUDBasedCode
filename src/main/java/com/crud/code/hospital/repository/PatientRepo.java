@@ -14,17 +14,16 @@ import java.util.Optional;
 
 @Repository
 public interface PatientRepo extends JpaRepository<PatientEntity, Integer> {
-//final private String CRUD_UPDATE;
-   String FIND_BY_ID_AND_NAME = SqlQueryLoader.get("patient.findByIdAndName");
-   String SEARCH_BY_DATE_RANGE = SqlQueryLoader.get("patient.searchByDateRange");
-   String FIND_BY_EMAIL = SqlQueryLoader.get("patient.findByEmail");
-
-
-    @Query(FIND_BY_ID_AND_NAME)
-    Optional<PatientEntity> findByIdAndName(@Param("id")Integer id , @Param("name")String name);
-@Query(SEARCH_BY_DATE_RANGE)
-List<PatientEntity> searchByDateRange(@Param("fromDate") LocalDate fromDate,
-                                      @Param("toDate") LocalDate toDate);
-@Query(FIND_BY_EMAIL)
-Optional<PatientEntity> findByEmail(@Param("email") String email);
+//   String FIND_BY_ID_AND_NAME = SqlQueryLoader.get("patient.findByIdAndName");
+//   String SEARCH_BY_DATE_RANGE = SqlQueryLoader.get("patient.searchByDateRange");
+//   String FIND_BY_EMAIL = SqlQueryLoader.get("patient.findByEmail");
+//
+//
+//    @Query(FIND_BY_ID_AND_NAME)
+//    Optional<PatientEntity> findByIdAndName(@Param("id")Integer id , @Param("name")String name);
+//@Query(SEARCH_BY_DATE_RANGE)
+//List<PatientEntity> searchByDateRange(@Param("fromDate") LocalDate fromDate,
+//                                      @Param("toDate") LocalDate toDate);
+//@Query(FIND_BY_EMAIL)
+//Optional<PatientEntity> findByEmail(@Param("email") String email);
 }

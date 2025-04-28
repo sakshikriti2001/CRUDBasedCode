@@ -1,6 +1,7 @@
 package com.crud.code.hospital.utility;
 
-import com.crud.code.hospital.dto.ApiResponseLogDto;
+import com.crud.code.hospital.dto.ApiResponseCreate;
+import com.crud.code.hospital.dto.ApiResponseUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -24,9 +25,13 @@ public class MessageResult {
         this.message = message;
     }
 
-    public static MessageResult apiLogSuccess(ApiResponseLogDto logData) {
+    public static MessageResult apiLogSuccess(ApiResponseCreate logData) {
         return new MessageResult(0, "SUCCESS", "Patient Details added successfully..", logData);
     }
 
+    public static MessageResult apiLogSuccess(ApiResponseUpdate data)
+    {
+        return new MessageResult(0, "SUCCESS", "Patient Details updated successfully..", data);
+    }
 
 }
