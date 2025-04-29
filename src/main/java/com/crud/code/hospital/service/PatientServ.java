@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PatientServ {
@@ -41,7 +42,7 @@ public class PatientServ {
         patientEntity.setDate(LocalDate.now());
         patientRepo.save(patientEntity);
         ApiResponseCreate logData = ApiLogUtil.buildLog("Add Patient Details", "/patient/create", "POST", dto, patientEntity, startTime, 200);
-        return MessageResult.apiLogSuccess(logData);
+        return MessageResult.apiLogSuccessCreate(logData);
     }
 
     public Optional<PatientEntity> findByIdAndNameDynamic(Integer id ,String name){
@@ -80,7 +81,7 @@ public class PatientServ {
             entity.setDate(LocalDate.now());
             patientRepo.save(entity);
             ApiResponseUpdate update = ApiLogUtil.buildLogForUpdate("Update Patient Details" , "/patient/update" , "POST" ,dto , entity ,startTime,201);
-            return MessageResult.apiLogSuccess(update);
+            return MessageResult.apiLogSuccessUpdate(update);
         }
         throw new PatientException("Patient not exist, you need to add");
     }

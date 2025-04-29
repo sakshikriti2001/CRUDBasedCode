@@ -1,5 +1,6 @@
 package com.crud.code.hospital.controller;
 
+import com.crud.code.hospital.dto.ApiResponseSearchByRange;
 import com.crud.code.hospital.dto.PatientDTO;
 import com.crud.code.hospital.dto.UpdatePatientDto;
 import com.crud.code.hospital.exceptionHandler.PatientException;
@@ -7,6 +8,7 @@ import com.crud.code.hospital.model.PatientEntity;
 
 import com.crud.code.hospital.repository.PatientRepo;
 import com.crud.code.hospital.service.PatientServ;
+import com.crud.code.hospital.utility.ApiLogUtil;
 import com.crud.code.hospital.utility.MessageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -68,9 +70,12 @@ public class PatientController {
 
 
     @GetMapping("/searchByDateRange")
-    public List<PatientEntity> searchByDateRange(@RequestParam LocalDate fromDate , @RequestParam LocalDate toDate)
+    public MessageResult searchByDateRange(@RequestParam LocalDate fromDate , @RequestParam LocalDate toDate)
     {
-      return  patientServ.searchByDateRangeDynamic(fromDate , toDate);
+        long startTime = System.currentTimeMillis();
+        List<PatientEntity> resultList = patientServ.searchByDateRangeDynamic(fromDate , toDate);
+        ApiResponseSearchByRange range = ApiLogUtil.buildLogForDateRange("Search By Date Range" , "/patient/searchByDateRange","GET", fromDate,toDate,resultList, startTime,200);
+        return new MessageResult(0, "SUCCESS", "List of Patient Details..", range);
     }
     @GetMapping("/findByEmail")
     public Optional<PatientEntity> findByEmail(@RequestParam String email)throws PatientException{
