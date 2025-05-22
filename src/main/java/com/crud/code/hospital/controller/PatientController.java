@@ -11,6 +11,7 @@ import com.crud.code.hospital.service.PatientServ;
 import com.crud.code.hospital.utility.ApiLogUtil;
 import com.crud.code.hospital.utility.MessageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -25,34 +26,38 @@ public class PatientController {
     @Autowired
     PatientRepo patientRepo;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public MessageResult createPatient(@RequestBody PatientDTO dto){
         return patientServ.addPatientDetails(dto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update")
     public MessageResult updateDetails(@RequestParam Integer id ,String name , @RequestBody UpdatePatientDto dto) throws PatientException {
 
         return patientServ.updatePatientDetails(id , name , dto);
     }
-
+    @PreAuthorize("hasRole('ADMIN'),('USER')")
     @GetMapping("/getAllPatientList")
     public List<PatientEntity> getAllPatientList()
     {
         return patientServ.getAllPatientList();
     }
 
+    @PreAuthorize("hasRole('ADMIN'),('USER')")
     @PostMapping("/getById")
     public Optional<PatientEntity> getById(@RequestParam Integer id)throws PatientException
     {
         return patientServ.getById(id);
     }
+    @PreAuthorize("hasRole('ADMIN'),('USER')")
     @GetMapping("/getPatientById/{id}")
     public Optional<PatientEntity> getPatientById(@PathVariable Integer id)throws PatientException
     {
         return patientServ.getById(id);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public String deletePatientDetail(@PathVariable("id") Integer id)
     {
@@ -61,6 +66,7 @@ public class PatientController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/deleteById")
     public String deleteById(@RequestParam Integer id)throws PatientException
     {
@@ -68,7 +74,7 @@ public class PatientController {
     }
 
 
-
+    @PreAuthorize("hasRole('ADMIN'),('USER')")
     @GetMapping("/searchByDateRange")
     public MessageResult searchByDateRange(@RequestParam LocalDate fromDate , @RequestParam LocalDate toDate)
     {
@@ -77,6 +83,7 @@ public class PatientController {
         ApiResponseSearchByRange range = ApiLogUtil.buildLogForDateRange("Search By Date Range" , "/patient/searchByDateRange","GET", fromDate,toDate,resultList, startTime,200);
         return new MessageResult(0, "SUCCESS", "List of Patient Details..", range);
     }
+    @PreAuthorize("hasRole('ADMIN'),('USER')")
     @GetMapping("/findByEmail")
     public Optional<PatientEntity> findByEmail(@RequestParam String email)throws PatientException{
         return patientServ.findByEmailDynamic(email);
