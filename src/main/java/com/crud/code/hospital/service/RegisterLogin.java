@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -41,40 +42,44 @@ public class RegisterLogin {
         user.setUserName(registerDto.getUserName());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setApiName("Register User");
+        user.setEndpointURL("/auth/registerUser");
+        user.setHttpMethod("POST");
+        user.setRequestBody(registerDto.toString());
+        user.setResponseBody("User registered successfully!");
+        user.setHttpStatusCode(200);
+        user.setTotalDuration(System.currentTimeMillis() - startTime);
+        user.setCreatedBy(user.getUserName());
+        user.setCreatedDate(LocalDateTime.now());
         if (registerDto.getRole() != null) {
             user.setRole(registerDto.getRole());
         } else {
-            user.setRole(Role.User);
+            user.setRole(Role.USER);
         }
         userRepo.save(user);
-
-//        ApiResponseCreateEntity log = new ApiResponseCreateEntity();
-//        log.setApiName("Register User");
-//        log.setEndpointURL("/auth/registerUser");
-//        log.setHttpMethod("POST");
-//        log.setRequestBody(registerDto.toString());
-//        log.setResponseBody("User registered successfully!");
-//        log.setHttpStatusCode(200);
-//        log.setTotalDuration(System.currentTimeMillis() - startTime);
-//        log.setCreatedBy(user.getUserName());
-//        log.setCreatedDate(LocalDateTime.now());
-//        log.setUserEntity(user);
-//
-//        apiLogResponseRepo.save(log); // save in same DB
 
         return MessageResult.registerMessageSuccess("User registered successfully!");
     }
 
     public Map<String, String> login(LoginDto dto){
-        Optional<UserEntity> existingUser = userRepo.findByUserName(dto.getUserName());
-        if (existingUser.isEmpty()){
-            throw new RuntimeException("please register first");
+        UserEntity existingUser = userRepo.findByUserName(dto.getUserName())
+                .orElseThrow(()-> new RuntimeException("User not found. Please register first."));
+        if(!passwordEncoder.matches(dto.getPassword(), existingUser.getPassword())){
+            throw new RuntimeException("Invalid password");
         }
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUserName(),dto.getPassword()));
-        customUserDetailsService.loadUserByUsername(dto.getUserName());
-        String role = existingUser.get().getRole().name();
+        try {
+
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(dto.getUserName(), dto.getPassword()));
+        }catch (Exception e){
+            throw new RuntimeException("Invalid userName or password");
+        }
+        //generate jwt token
+        String role = existingUser.getRole().name();
         String token = jwtUtility.generateToken(dto.getUserName(), role);
 
-        return Map.of("token", token);
+        return Map.of("token", token,
+                "username",existingUser.getUserName(),
+                "role",role);
+
     }
 }

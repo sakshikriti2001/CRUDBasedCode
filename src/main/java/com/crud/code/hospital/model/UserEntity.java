@@ -35,4 +35,6 @@ public class UserEntity {
     private long totalDuration;
     private String modifiedBy;
     private LocalDateTime modifiedDate;
+    private LocalDateTime createdDate;
+    private String createdBy;
 }

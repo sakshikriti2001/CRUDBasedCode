@@ -34,6 +34,8 @@ public class PatientEntity {
     private long totalDuration;
     private String modifiedBy;
     private LocalDateTime modifiedDate;
+    private LocalDateTime createdDate;
+    private String createdBy;
 
 
     public LocalDate getDate() {

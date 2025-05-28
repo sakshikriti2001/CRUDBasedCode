@@ -38,20 +38,20 @@ public class PatientController {
 
         return patientServ.updatePatientDetails(id , name , dto);
     }
-    @PreAuthorize("hasRole('ADMIN'),('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/getAllPatientList")
     public List<PatientEntity> getAllPatientList()
     {
         return patientServ.getAllPatientList();
     }
 
-    @PreAuthorize("hasRole('ADMIN'),('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @PostMapping("/getById")
     public Optional<PatientEntity> getById(@RequestParam Integer id)throws PatientException
     {
         return patientServ.getById(id);
     }
-    @PreAuthorize("hasRole('ADMIN'),('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/getPatientById/{id}")
     public Optional<PatientEntity> getPatientById(@PathVariable Integer id)throws PatientException
     {
@@ -74,7 +74,7 @@ public class PatientController {
     }
 
 
-    @PreAuthorize("hasRole('ADMIN'),('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/searchByDateRange")
     public MessageResult searchByDateRange(@RequestParam LocalDate fromDate , @RequestParam LocalDate toDate)
     {
@@ -83,7 +83,7 @@ public class PatientController {
         ApiResponseSearchByRange range = ApiLogUtil.buildLogForDateRange("Search By Date Range" , "/patient/searchByDateRange","GET", fromDate,toDate,resultList, startTime,200);
         return new MessageResult(0, "SUCCESS", "List of Patient Details..", range);
     }
-    @PreAuthorize("hasRole('ADMIN'),('USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping("/findByEmail")
     public Optional<PatientEntity> findByEmail(@RequestParam String email)throws PatientException{
         return patientServ.findByEmailDynamic(email);

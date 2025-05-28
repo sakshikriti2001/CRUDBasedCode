@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +41,16 @@ public class PatientServ {
         patientEntity.setIllness(dto.getIllness());
         patientEntity.setEmail(dto.getEmail());
         patientEntity.setDate(LocalDate.now());
+
+        patientEntity.setApiName("Register User");
+        patientEntity.setEndpointURL("/auth/registerUser");
+        patientEntity.setHttpMethod("POST");
+        patientEntity.setRequestBody(dto.toString());
+        patientEntity.setResponseBody("User registered successfully!");
+        patientEntity.setHttpStatusCode(200);
+        patientEntity.setTotalDuration(System.currentTimeMillis() - startTime);
+        patientEntity.setCreatedBy(patientEntity.getName());
+        patientEntity.setCreatedDate(LocalDateTime.now());
         patientRepo.save(patientEntity);
         ApiResponseCreate logData = ApiLogUtil.buildLog("Add Patient Details", "/patient/create", "POST", dto, patientEntity, startTime, 200);
         return MessageResult.apiLogSuccessCreate(logData);
