@@ -14,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -74,8 +76,14 @@ public class RegisterLogin {
             throw new RuntimeException("Invalid userName or password");
         }
         //generate jwt token
+        HashMap<String , Object> maping = new HashMap<>();
+        maping.put("username", dto.getUserName());
+        maping.put("UserId" , existingUser.getUserId());
         String role = existingUser.getRole().name();
-        String token = jwtUtility.generateToken(dto.getUserName(), role);
+        maping.put("roles",role);
+
+
+        String token = jwtUtility.generateToken(maping, "subject_generate");
 
         return Map.of("token", token,
                 "username",existingUser.getUserName(),

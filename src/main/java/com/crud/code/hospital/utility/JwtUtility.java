@@ -1,5 +1,6 @@
 package com.crud.code.hospital.utility;
 
+import com.crud.code.hospital.dto.LoginDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -37,16 +38,18 @@ public class JwtUtility {
         return claimsResolver.apply(claims);
     }
 
-    // Generate JWT token (username + role)
-    public String generateToken(String username, String role) {
+    // Generate JWT token (username +userDetails + role)
+
+    public String generateToken(Map<String , Object>claims, String subject) {
         return Jwts.builder()
-                .setSubject(username)
-                .claim("role", role)
+                .setClaims(claims)
+                .setSubject("new_token_generation")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
+
     public Boolean validateToken(String token, String username) {
         final String extractedUsername = extractUsername(token);
         return (extractedUsername.equals(username) && !isTokenExpired(token));
@@ -68,5 +71,10 @@ public class JwtUtility {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private Map<String , Object> getPayloadAsap(String token){
+        Claims claims = extractAllClaims(token);
+        return new HashMap<>(claims);
     }
 }
