@@ -38,5 +38,9 @@ public class MessageResult {
     {
         return  new MessageResult(0, "SUCCESS", "List of Patient Details..", dateRangeData);
     }
+    public static MessageResult registerMessageSuccess(String message){
+        return new MessageResult(0,"SUCCESS","User registered successfully!");
+    }
+
 
 }

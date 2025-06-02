@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -19,6 +20,22 @@ public class PatientEntity {
     private String gender;
     private String email;
     private LocalDate date;
+    private String apiName;
+    private String endpointURL;
+    private String httpMethod;
+
+    @Column(columnDefinition = "TEXT")
+    private String requestBody;
+
+    @Column(columnDefinition = "TEXT")
+    private String responseBody;
+
+    private int httpStatusCode;
+    private long totalDuration;
+    private String modifiedBy;
+    private LocalDateTime modifiedDate;
+    private LocalDateTime createdDate;
+    private String createdBy;
 
 
     public LocalDate getDate() {
